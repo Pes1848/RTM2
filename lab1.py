@@ -1,39 +1,44 @@
 def read_input_file(filename):
-    with open(filename, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-    return lines
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+        size = list(map(int, lines[0].split()))
+        coords = list(map(int, lines[1].split()))
+        return size, coords
 
-def parse_dimensions(line):
-    rows, cols = map(int, line.strip().split())
-    return rows, cols
-
-def create_zero_matrix(rows, cols):
+def create_matrix(rows, cols):
     return [[0 for _ in range(cols)] for _ in range(rows)]
 
-def parse_rectangle_coordinates(line):
-    x1, y1, x2, y2 = map(int, line.strip().split())
-    return x1 - 1, y1 - 1, x2 - 1, y2 - 1  # в индексы Python
+def fill_rectangle_with_ones(matrix, coords):
+    r1, c1, r2, c2 = coords
+    top = min(r1, r2) - 1
+    bottom = max(r1, r2) - 1
+    left = min(c1, c2) - 1
+    right = max(c1, c2) - 1
 
-def fill_rectangle(matrix, r1, c1, r2, c2):
-    row_start, row_end = min(r1, r2), max(r1, r2)
-    col_start, col_end = min(c1, c2), max(c1, c2)
-    for r in range(row_start, row_end + 1):
-        for c in range(col_start, col_end + 1):
-            matrix[r][c] = 1
-    return matrix
+    for i in range(top, bottom + 1):
+        for j in range(left, right + 1):
+            if 0 <= i < len(matrix) and 0 <= j < len(matrix[0]):
+                matrix[i][j] = 1
 
 def print_matrix(matrix):
     for row in matrix:
         print(' '.join(map(str, row)))
 
+def count_zeros(matrix):
+    return sum(cell == 0 for row in matrix for cell in row)
+
 def main():
-    lines = read_input_file('test1.txt')
-    rows, cols = parse_dimensions(lines[0])
-    matrix = create_zero_matrix(rows, cols)
-    r1, c1, r2, c2 = parse_rectangle_coordinates(lines[1])
-    matrix = fill_rectangle(matrix, r1, c1, r2, c2)
+    filename = 'test1.txt'
+    size, coords = read_input_file(filename)
+    rows, cols = size
+    matrix = create_matrix(rows, cols)
+    fill_rectangle_with_ones(matrix, coords)
     print_matrix(matrix)
+
+    zero_count = count_zeros(matrix)
+    print(f"\nNumber of zero cells: {zero_count}")
 
 if __name__ == "__main__":
     main()
+
 
